@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     size_t it = 0;//Счетчик итераций
 
     //Задаем размер блока и сетки 
-    dim3 BLOCK_SIZE = dim3(32, 32);//Размер блока - количество потоков
+    dim3 BLOCK_SIZE = dim3(8, 8);//Размер блока - количество потоков
     dim3 GRID_SIZE = dim3((n + BLOCK_SIZE.x - 1)/BLOCK_SIZE.x, (n + BLOCK_SIZE.y - 1)/BLOCK_SIZE.y);//Размер сетки - количество блоков
 
     //Заполнение угловых значений
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
     cudaGraphExec_t instance;
 
     cudaStreamBeginCapture(stream, cudaStreamCaptureModeGlobal);
-    for(int i = 0; i<500/2;i+=2)
+    for(int i = 0; i<500;i+=2)
     {
         update<<<GRID_SIZE,BLOCK_SIZE, 0, stream>>>(new_vec_d, vec_d, n);
         update<<<GRID_SIZE,BLOCK_SIZE, 0, stream>>>(vec_d, new_vec_d, n);
