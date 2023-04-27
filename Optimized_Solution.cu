@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
     //Задаем размер блока и сетки 
     dim3 BLOCK_SIZE = dim3(32, 32);//Размер блока - количество потоков
-    dim3 GRID_SIZE = dim3(ceil(n/32.), ceil(n/32.));//Размер сетки - количество блоков
+    dim3 GRID_SIZE = dim3((n + BLOCK_SIZE.x - 1)/BLOCK_SIZE.x, (n + BLOCK_SIZE.y - 1)/BLOCK_SIZE.y);//Размер сетки - количество блоков
 
     //Заполнение угловых значений
     fill<<<GRID_SIZE, BLOCK_SIZE>>>(vec_d, new_vec_d, n);
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
     cudaGraphExec_t instance;
 
     cudaStreamBeginCapture(stream, cudaStreamCaptureModeGlobal);
-    for(int i = 0; i<n*n/4;i+=2)
+    for(int i = 0; i<500/2;i+=2)
     {
         update<<<GRID_SIZE,BLOCK_SIZE, 0, stream>>>(new_vec_d, vec_d, n);
         update<<<GRID_SIZE,BLOCK_SIZE, 0, stream>>>(vec_d, new_vec_d, n);
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
     //Основной цикл алгоритма
     while(error < max_error && it < iter)
 	{        
-        it+=n*n/2;
+        it+=500;
         cudaGraphLaunch(instance, stream);
         my_sub<<<GRID_SIZE, BLOCK_SIZE, 0, stream>>>(vec_d, new_vec_d, tmp_d, n);
 	    cub::DeviceReduce::Max(store, bytes, tmp_d, max_errorx, n*n);
